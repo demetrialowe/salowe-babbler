@@ -28,58 +28,31 @@ def get_start_states(filename, ngramsize):
 
 
 def get_possible_words(filename, ngramsize, state):
-    wordmap = {}
+    possible_words = {}
     startlist = get_start_states(filename, ngramsize)
     wordlist = makeWordList(filename)
-    #for every state in that list, put those into the dictionary
-    #for now I'm putting that each start state has a list as its value
-    for start in startlist:
-        if start not in wordmap:
-            wordmap[start] = []
-        teststring = ''
-        for i in range(ngramsize):
-            teststring = teststring + ' ' + wordlist[i]
-            if teststring == start:  # won't work but maybe right idea?
-                nextword = wordlist[i + ngramsize + 1]
-                wordmap[start].append(nextword)
-    #
-    # wordmap = {}
-    # startlist = ['this is', 'is a', 'a sentence']
-    # wordlist = ['This', 'is', 'not', 'a', 'sentence', 'this', 'is', 'a', 'sentence', 'this', 'is', 'a', 'dog']
-    # ngramsize = 2
-    # count = 0
-    # for start in startlist:
-    #    if start not in wordmap:
-    #        wordmap[start] = []
-    #    if count <= len(wordlist) - ngramsize - 1:
-    #         for word in wordlist:
-    #             teststring = ''
-    #                 for i in range(count, count + ngramsize):
-    #                     teststring = teststring + ' ' + wordlist[i]
-    #                     print(teststring)
-    #                 count = count + 1
-    #         print count
-
-    #print(wordmap)
-    #tested in console, basically works. Order is weird but don't think that should affect
-
-    #from here I want to take each start state and get the next word in the file, and append that word to the list
-    #maybe go back to wordlist of the file, find the first instance of each startstate, slice the next word?
-
-
-
-
-
+    if state in startlist:
+        for start in startlist:
+            if start not in possible_words:
+                for start in startlist:
+                    if start not in possible_words:
+                        possible_words[start] = []
+                    for i in range(len(wordlist) - ngramsize):
+                        word = wordlist[i]
+                        teststring = word
+                        for x in range(i + 1, i + ngramsize):
+                            teststring = teststring + ' ' + wordlist[x]
+                        nextword = wordlist[x + 1]
+                        if teststring == start:
+                            possible_words[start].append(nextword)
     '''Use the text contained in the file with given filename to create a map
     of ngrams of the given ngram size. Then return the list of all words that
     could follow the given state. For example, for test_cases/test1.txt, with
     ngram size of 2 and the state "this is", we should return the list:
     ['an', 'great', 'great'] (or something like this in a different order).
     '''
-
     # TODO: return all the words that could follow the given state
-    return ['dog', 'cat', 'dog', 'bird']
-
+    return possible_words[state]
 
 def babble(filename, ngramsize, numsentences):
     '''Generate the given number of sentences using the given ngram size.
@@ -113,13 +86,13 @@ def test1():
     ngram = 3
     numsentences = 2
 
-    # possible_words = get_possible_words(filename, ngram, 'this is')
-    # assert ('an' in possible_words)
-    # assert (possible_words.count('great') == 2)
+    possible_words = get_possible_words(filename, ngram, 'this is')
+    assert ('an' in possible_words)
+    assert (possible_words.count('great') == 2)
 
     start_states = get_start_states(filename, ngram)
     print(start_states)
-    # assert ('This is' in start_states)
+    assert ('This is' in start_states)
     # TODO: you should check other possible start states
 
     # setting a seed for the random number generator means that the sequence
