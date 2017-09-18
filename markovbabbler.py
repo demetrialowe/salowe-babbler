@@ -1,7 +1,7 @@
 import sys
 import random
 
-##hello darkness
+
 def makeWordList(filename):
     wordlist = []
     for line in open(filename):
@@ -24,19 +24,52 @@ def get_start_states(filename, ngramsize):
         del wordlist[0]
     for state in fake_start_states:
         start_states.append(listtostring(state))
-    # '''Return a list of the states that can start a new sentence. If a state
-    # is used to start a sentence multiple times, it should also be in the list
-    # multiple times.
-    # '''
-
-    # TODO: return all start states from the file
     return start_states
-
-def donothing():
-    return none
 
 
 def get_possible_words(filename, ngramsize, state):
+    wordmap = {}
+    startlist = get_start_states(filename, ngramsize)
+    wordlist = makeWordList(filename)
+    #for every state in that list, put those into the dictionary
+    #for now I'm putting that each start state has a list as its value
+    for start in startlist:
+        if start not in wordmap:
+            wordmap[start] = []
+        teststring = ''
+        for i in range(ngramsize):
+            teststring = teststring + ' ' + wordlist[i]
+            if teststring == start:  # won't work but maybe right idea?
+                nextword = wordlist[i + ngramsize + 1]
+                wordmap[start].append(nextword)
+    #
+    # wordmap = {}
+    # startlist = ['this is', 'is a', 'a sentence']
+    # wordlist = ['This', 'is', 'not', 'a', 'sentence', 'this', 'is', 'a', 'sentence', 'this', 'is', 'a', 'dog']
+    # ngramsize = 2
+    # count = 0
+    # for start in startlist:
+    #    if start not in wordmap:
+    #        wordmap[start] = []
+    #    if count <= len(wordlist) - ngramsize - 1:
+    #         for word in wordlist:
+    #             teststring = ''
+    #                 for i in range(count, count + ngramsize):
+    #                     teststring = teststring + ' ' + wordlist[i]
+    #                     print(teststring)
+    #                 count = count + 1
+    #         print count
+
+    #print(wordmap)
+    #tested in console, basically works. Order is weird but don't think that should affect
+
+    #from here I want to take each start state and get the next word in the file, and append that word to the list
+    #maybe go back to wordlist of the file, find the first instance of each startstate, slice the next word?
+
+
+
+
+
     '''Use the text contained in the file with given filename to create a map
     of ngrams of the given ngram size. Then return the list of all words that
     could follow the given state. For example, for test_cases/test1.txt, with

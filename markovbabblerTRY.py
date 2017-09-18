@@ -29,7 +29,7 @@ def get_start_states(filename, ngramsize):
     # multiple times.
     # '''
 
-    # TODO: return all start states from the file
+    # return all start states from the file
     return start_states
 
 
