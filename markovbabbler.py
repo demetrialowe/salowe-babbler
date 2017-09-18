@@ -31,20 +31,19 @@ def get_possible_words(filename, ngramsize, state):
     possible_words = {}
     startlist = get_start_states(filename, ngramsize)
     wordlist = makeWordList(filename)
-    if state in startlist:
-        for start in startlist:
-            if start not in possible_words:
-                for start in startlist:
-                    if start not in possible_words:
-                        possible_words[start] = []
-                    for i in range(len(wordlist) - ngramsize):
-                        word = wordlist[i]
-                        teststring = word
-                        for x in range(i + 1, i + ngramsize):
-                            teststring = teststring + ' ' + wordlist[x]
-                        nextword = wordlist[x + 1]
-                        if teststring == start:
-                            possible_words[start].append(nextword)
+    for start in startlist:
+        if start in possible_words:
+            continue
+        if start not in possible_words:
+            possible_words[start] = []
+        for i in range(len(wordlist) - ngramsize):
+            word = wordlist[i]
+            teststring = word
+            for x in range(i + 1, i + ngramsize):
+                teststring = teststring + ' ' + wordlist[x]
+                nextword = wordlist[x + 1]
+            if teststring == start:
+                possible_words[start].append(nextword)
     '''Use the text contained in the file with given filename to create a map
     of ngrams of the given ngram size. Then return the list of all words that
     could follow the given state. For example, for test_cases/test1.txt, with
@@ -83,25 +82,27 @@ def main():
 
 def test1():
     filename = 'test_cases/test1.txt'
-    ngram = 3
+    ngram = 2
     numsentences = 2
 
+
     possible_words = get_possible_words(filename, ngram, 'this is')
+    print possible_words
     assert ('an' in possible_words)
     assert (possible_words.count('great') == 2)
 
-    start_states = get_start_states(filename, ngram)
-    print(start_states)
-    assert ('This is' in start_states)
-    # TODO: you should check other possible start states
-
-    # setting a seed for the random number generator means that the sequence
-    # of pseudo-random numbers is the same for each run of the code.
-    random.seed(0)
-    # TODO make sure the sentences you generate make sense
-    sentences = babble(filename, ngram, numsentences)
-    for sentence in sentences:
-        print(sentence)
+    # start_states = get_start_states(filename, ngram)
+    # print(start_states)
+    # assert ('This is' in start_states)
+    # #TODO: you should check other possible start states
+    #
+    # # setting a seed for the random number generator means that the sequence
+    # # of pseudo-random numbers is the same for each run of the code.
+    # random.seed(0)
+    # # TODO make sure the sentences you generate make sense
+    # sentences = babble(filename, ngram, numsentences)
+    # for sentence in sentences:
+    #     print(sentence)
 
 
 if __name__ == '__main__':
