@@ -1,7 +1,6 @@
 import sys
 import random
 
-
 def makeWordList(filename):
     wordlist = []
     for line in open(filename):
@@ -26,7 +25,6 @@ def get_start_states(filename, ngramsize):
         start_states.append(listtostring(state))
     return start_states
 
-
 def get_possible_words(filename, ngramsize, state):
     possible_words = {}
     startlist = get_start_states(filename, ngramsize)
@@ -44,24 +42,28 @@ def get_possible_words(filename, ngramsize, state):
                 nextword = wordlist[x + 1]
             if teststring == start:
                 possible_words[start].append(nextword)
-    '''Use the text contained in the file with given filename to create a map
-    of ngrams of the given ngram size. Then return the list of all words that
-    could follow the given state. For example, for test_cases/test1.txt, with
-    ngram size of 2 and the state "this is", we should return the list:
-    ['an', 'great', 'great'] (or something like this in a different order).
-    '''
-    # TODO: return all the words that could follow the given state
     return possible_words[state]
 
 def babble(filename, ngramsize, numsentences):
-    '''Generate the given number of sentences using the given ngram size.
-    Create a dictionary where keys are each n-1 words, and the values
-    are the words that can follow in a list. Randomly pick a word, generate
-    a new key, and continue until you reach a stop token (such as . or !)
-    '''
+    babbler = {}
+    firstword = random.choice(get_start_states(filename, ngramsize-1))
+    babbler[firstword] = get_possible_words(filename, ngramsize-1, firstword)
+    sentence = firstword
+    wordnext = firstword
+    while wordnext != '.' and wordnext != '!':
+        nextstep = get_possible_words(filename, ngramsize-1, wordnext)
+        choice = random.choice(nextstep)
+        babbler[wordnext] = choice
+        sentence = sentence + ' ' +choice
+        wordnext = choice
+    return sentence
+'''Generate the given number of sentences using the given ngram size.
+Create a dictionary where keys are each n-1 words, and the values
+are the words that can follow in a list. Randomly pick a word, generate
+a new key, and continue until you reach a stop token (such as . or !)
+'''
+# TODO: return sentences from the file
 
-    # TODO: return sentences from the file
-    return ['sentence one', 'sentence two']
 
 
 def main():
@@ -87,15 +89,17 @@ def test1():
 
 
     possible_words = get_possible_words(filename, ngram, 'this is')
-    print possible_words
     assert ('an' in possible_words)
     assert (possible_words.count('great') == 2)
 
-    # start_states = get_start_states(filename, ngram)
-    # print(start_states)
-    # assert ('This is' in start_states)
-    # #TODO: you should check other possible start states
-    #
+    start_states = get_start_states(filename, ngram)
+    print(start_states)
+    assert ('This is' in start_states)
+    assert ('sentence !' in start_states)
+    assert ('sentence is' in start_states)
+
+    babbletest= babble(filename, ngram, numsentences)
+    print(babbletest)
     # # setting a seed for the random number generator means that the sequence
     # # of pseudo-random numbers is the same for each run of the code.
     # random.seed(0)
