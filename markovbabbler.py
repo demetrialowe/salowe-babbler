@@ -50,22 +50,22 @@ def get_possible_words(filename, ngramsize, state):
 
 
 def babble(filename, ngramsize, numsentences):
-    babbler = {}
-    firstword = random.choice(get_start_states(filename, ngramsize))
-    nextstep = get_possible_words(filename, ngramsize, firstword)
-    babbler[firstword] = nextstep
-    choice = random.choice(nextstep)
-    sentence = firstword + ' ' + choice
-    wordnext = choice
-    while wordnext != '.' and wordnext != '!':
-        nextstep = get_possible_words(filename, ngramsize-1, wordnext)
-        choice = random.choice(nextstep)
-        babbler[wordnext] = nextstep
-        sentence = sentence + ' ' + choice
-        wordnext = choice
-    sentence = sentence + ' ' + wordnext
-    return sentence
-
+    sentences = []
+    for x in range(numsentences):
+        firstword = random.choice(get_start_states(filename,ngramsize))
+        nextsteps = get_possible_words(filename, ngramsize, firstword)
+        nextword = random.choice(nextsteps)
+        sentence = firstword + ' ' + nextword
+        choice = nextword
+        nextword = sentence[sentence.index(' ') + 1:]
+        while choice != '.' and choice != '!':
+            nextsteps = get_possible_words(filename, ngramsize, nextword) #nextsteps gets the list in my dictionary at key nextword
+            choice = random.choice(nextsteps) #i choose a random next word and put it in choice
+            sentence = sentence + ' ' + choice #i add that to my sentence
+            nextword = nextword + ' ' + choice #i take my key, and concatenate the word I just chose
+            nextword = nextword[nextword.index(' ') + 1:] #I take that whole n+1 string and slice off the first word to pass that as my next key
+        sentences.append(sentence)
+    return sentences
 
 '''Generate the given number of sentences using the given ngram size.
 Create a dictionary where keys are each n-1 words, and the values
@@ -109,8 +109,6 @@ def test1():
     assert ('sentence !' in start_states)
     assert ('sentence is' in start_states)
 
-    babbletest = babble(filename, ngram, numsentences)
-    print(babbletest)
     # setting a seed for the random number generator means that the sequence
     # of pseudo-random numbers is the same for each run of the code.
     random.seed(0)
